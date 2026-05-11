@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0B1020;
+  color: #f4f6fa;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B1020;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e2d4a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b5280;
+}
+
+/* ─── Transition ─── */
+.transition-base {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Cards ─── */
+.card {
+  background: linear-gradient(135deg, rgba(20, 29, 51, 0.9) 0%, rgba(20, 29, 51, 0.7) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(79, 140, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* ─── Gradient text ─── */
+.text-gradient {
+  background: linear-gradient(135deg, #4F8CFF 0%, #22D3EE 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Section divider ─── */
+.section-glow {
+  position: relative;
+}
+
+.section-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(79, 140, 255, 0.15), transparent);
+}
+
+/* ─── Spinner ─── */
+.spinner {
+  border: 2px solid rgba(79, 140, 255, 0.15);
+  border-top: 2px solid #4F8CFF;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── Form Inputs ─── */
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+  background: #111b30 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #f4f6fa !important;
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(79, 140, 255, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.1), 0 0 12px rgba(79, 140, 255, 0.04) !important;
+  outline: none !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #4a5f8a !important;
+}
+
+select option {
+  background: #111b30;
+  color: #f4f6fa;
+}
+
+/* ─── Badges ─── */
+.badge-high {
+  @apply bg-danger-muted text-danger;
+}
+
+.badge-medium {
+  @apply bg-warning-muted text-warning;
+}
+
+.badge-low {
+  @apply bg-success-muted text-success;
+}
+
+/* ─── Recharts ─── */
+.recharts-cartesian-grid line {
+  stroke: rgba(255, 255, 255, 0.04) !important;
+}
+
+.recharts-text {
+  fill: #6b7fa3 !important;
+  font-size: 11px;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #141d33 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ─── Progress bar glow ─── */
+.progress-glow {
+  box-shadow: 0 0 8px rgba(79, 140, 255, 0.3);
+}
+
+/* ─── Base ─── */
+button {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+}
+
+input,
+textarea,
+select {
+  font-family: 'Inter', system-ui, sans-serif;
+}

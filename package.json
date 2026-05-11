@@ -1,0 +1,16 @@
+{
+  "name": "reality-hits",
+  "version": "1.0.0",
+  "description": "AI-powered grievance resolution intelligence system",
+  "author": "Hackathon Team",
+  "license": "MIT",
+  "keywords": ["grievance", "complaint", "ai", "resolution", "dashboard"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/reality-hits"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/reality-hits/issues"
+  },
+  "homepage": "https://github.com/yourusername/reality-hits"
+}
