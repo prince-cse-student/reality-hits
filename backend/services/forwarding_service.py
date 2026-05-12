@@ -24,7 +24,7 @@ def generate_email_body(complaint: dict, department: dict) -> str:
 <tr><td style="padding:8px;font-weight:bold;">Category:</td><td>{complaint.get('category','N/A')}</td></tr>
 <tr><td style="padding:8px;font-weight:bold;">Priority:</td><td>{complaint.get('priority','Medium')}</td></tr>
 <tr><td style="padding:8px;font-weight:bold;">Location:</td><td>{complaint.get('location','N/A')}</td></tr>
-<tr><td style="padding:8px;font-weight:bold;">Filed By:</td><td>{complaint.get('email','Anonymous')}</td></tr>
+<tr><td style="padding:8px;font-weight:bold;">Filed By:</td><td>{complaint.get('citizen_name') or complaint.get('citizen_email') or 'Anonymous'}</td></tr>
 </table>
 <h3>Complaint Details</h3>
 <p style="background:#f3f4f6;padding:12px;border-radius:8px;border-left:4px solid #1a56db;">{complaint.get('text','')}</p>
@@ -66,7 +66,7 @@ def create_forwarding_record(complaint: dict) -> Tuple[Dict[str, Any], Dict[str,
             complaint.get("priority", "Medium"),
         ),
         "body_html": generate_email_body(complaint, department),
-        "status": "delivered",
+        "status": "simulated",
         "sent_at": datetime.utcnow().isoformat(),
         "message_id": f"msg-{''.join(random.choices(string.ascii_lowercase + string.digits, k=12))}@citizenvoice.local",
         "delivery_status": "Simulated — SMTP not configured",

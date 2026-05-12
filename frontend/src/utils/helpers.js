@@ -53,11 +53,13 @@ export const getStatusColor = (status) => {
   switch (status) {
     case 'Submitted':
       return 'blue'
+    case 'Under Review':
+    case 'Assigned':
+      return 'blue'
     case 'In Progress':
       return 'yellow'
-    case 'Escalated':
-      return 'red'
     case 'Resolved':
+    case 'Closed':
       return 'green'
     default:
       return 'gray'
@@ -69,11 +71,16 @@ export const categoryIcons = {
   'Water': '💧',
   'Roads': '🛣️',
   'Garbage': '🗑️',
-  'Healthcare': '🏥',
-  'Education': '📚',
-  'Public Safety': '🚨',
-  'Transportation': '🚌',
-  'Other': '📋'
+  'Sanitation': '🧹',
+  'Transport': '🚌',
+  'Noise': '🔊',
+  'Safety': '🚨',
+  'Telecom': '📡',
+  'Consumer': '🧾',
+  'Government': '🏛️',
+  'Banking': '🏦',
+  'Housing': '🏠',
+  'Travel': '🧳'
 }
 
 export const getCategoryIcon = (category) => {

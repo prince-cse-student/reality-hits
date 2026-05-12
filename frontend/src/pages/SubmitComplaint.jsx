@@ -26,6 +26,7 @@ export default function SubmitComplaint({ showToast }) {
   const handleSubmit = async (e) => {
     e.preventDefault(); setError('')
     if (!formData.citizen_name.trim()) return setError('Full name is required.')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.citizen_email)) return setError('Valid email is required.')
     if (!formData.location.trim()) return setError('Location is required.')
     if (formData.citizen_phone.replace(/[\s\-+]/g, '').length < 10) return setError('Valid mobile number (min 10 digits) is required.')
     if (formData.text.trim().length < 10) return setError('Complaint detail must be at least 10 characters.')
@@ -34,13 +35,11 @@ export default function SubmitComplaint({ showToast }) {
     try {
       const d = new FormData()
       d.append('citizen_name', formData.citizen_name)
+      d.append('citizen_email', formData.citizen_email)
       d.append('citizen_phone', formData.citizen_phone)
       d.append('text', formData.text)
       d.append('location', formData.location)
       d.append('language', formData.language)
-      // Auto-generate placeholder email from phone if not provided
-      if (!formData.citizen_email) d.append('citizen_email', `${formData.citizen_phone.replace(/[\s\-+]/g, '')}@citizen.local`)
-      else d.append('citizen_email', formData.citizen_email)
       if (formData.image) d.append('image', formData.image)
       setSuccess(await complaintService.submitComplaint(d))
       showToast?.('Complaint filed successfully.', 'success')
@@ -165,6 +164,15 @@ export default function SubmitComplaint({ showToast }) {
                     placeholder="+91 ..."
                     className="w-full px-4 py-3 border border-border-primary text-[14px]" />
                 </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-text-secondary uppercase tracking-widest mb-1.5">Email</label>
+                  <input type="email" name="citizen_email" value={formData.citizen_email} onChange={handleChange}
+                    placeholder="you@example.com"
+                    className="w-full px-4 py-3 border border-border-primary text-[14px]" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-[11px] font-bold text-text-secondary uppercase tracking-widest mb-1.5">Language</label>
                   <select name="language" value={formData.language} onChange={handleChange}

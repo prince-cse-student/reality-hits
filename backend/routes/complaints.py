@@ -1,17 +1,25 @@
 """Complaint routes — PUBLIC submit (no auth), track, list"""
 from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
 from database.mongo import get_database
+from middleware import get_current_admin
 from services.complaint_service import ComplaintService
 from services.ai_service import analyze_complaint_with_ai
 from services.forwarding_service import create_forwarding_record, create_initial_timeline
 from services.department_config import get_department
-import os, re
+from config import (
+    ALLOWED_UPLOAD_CONTENT_TYPES,
+    ALLOWED_UPLOAD_EXTENSIONS,
+    MAX_UPLOAD_SIZE_BYTES,
+    UPLOAD_DIR,
+)
+import re
+from pathlib import Path
+from uuid import uuid4
 from datetime import datetime
 
 router = APIRouter()
 
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_service(db=Depends(get_database)) -> ComplaintService:
@@ -25,6 +33,23 @@ def validate_email(email: str) -> bool:
 def validate_phone(phone: str) -> bool:
     digits = re.sub(r'[\s\-\+]', '', phone)
     return len(digits) >= 10 and digits.isdigit()
+
+
+async def save_upload(image: UploadFile) -> str:
+    suffix = Path(image.filename or "").suffix.lower()
+    if suffix not in ALLOWED_UPLOAD_EXTENSIONS:
+        raise HTTPException(status_code=422, detail="Only JPG, PNG, WEBP, or GIF images are allowed")
+    if image.content_type not in ALLOWED_UPLOAD_CONTENT_TYPES:
+        raise HTTPException(status_code=422, detail="Invalid image content type")
+
+    content = await image.read()
+    if len(content) > MAX_UPLOAD_SIZE_BYTES:
+        raise HTTPException(status_code=413, detail="File exceeds 5MB limit")
+
+    filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{uuid4().hex}{suffix}"
+    filepath = UPLOAD_DIR / filename
+    filepath.write_bytes(content)
+    return f"/uploads/{filename}"
 
 
 @router.post("/complaints")
@@ -59,11 +84,7 @@ async def submit_complaint(
         # 2. Save image
         image_url = None
         if image:
-            filename = f"{datetime.utcnow().timestamp()}_{image.filename}"
-            filepath = os.path.join(UPLOAD_DIR, filename)
-            with open(filepath, "wb") as f:
-                f.write(await image.read())
-            image_url = f"/uploads/{filename}"
+            image_url = await save_upload(image)
 
         # 3. Generate complaint ID
         complaint_id = await service.generate_complaint_id()
@@ -143,7 +164,12 @@ async def submit_complaint(
 
 
 @router.get("/complaints")
-async def get_complaints(skip: int = 0, limit: int = 10, service: ComplaintService = Depends(get_service)):
+async def get_complaints(
+    skip: int = 0,
+    limit: int = 10,
+    service: ComplaintService = Depends(get_service),
+    admin: dict = Depends(get_current_admin),
+):
     complaints, total = await service.get_all_complaints(skip, limit)
     return {"data": [_serialize(c) for c in complaints], "total": total}
 
@@ -153,27 +179,20 @@ async def track_complaint(
     complaint_id: str = None, email: str = None, mobile: str = None,
     service: ComplaintService = Depends(get_service),
 ):
-    """Track complaint by complaint_id, email, or mobile — any one field"""
+    """Track complaint by complaint ID plus matching email or mobile."""
     results = []
 
-    if complaint_id:
-        c = await service.get_by_complaint_id(complaint_id)
-        if c:
-            results = [c]
-    elif email:
-        results = await service.get_by_email(email)
-    elif mobile:
-        results = await service.get_by_phone(mobile)
-    else:
-        raise HTTPException(status_code=400, detail="Provide complaint_id, email, or mobile")
+    if not complaint_id or not (email or mobile):
+        raise HTTPException(status_code=400, detail="Provide complaint ID plus registered email or mobile")
+
+    c = await service.get_by_complaint_id(complaint_id)
+    if c and _contact_matches(c, email, mobile):
+        results = [c]
 
     if not results:
         raise HTTPException(status_code=404, detail="No complaints found")
 
-    # Return single or list
-    if len(results) == 1:
-        return _serialize(results[0])
-    return {"data": [_serialize(c) for c in results], "total": len(results)}
+    return _serialize_public(results[0])
 
 
 @router.get("/complaints/{complaint_id}")
@@ -181,7 +200,7 @@ async def get_complaint(complaint_id: str, service: ComplaintService = Depends(g
     complaint = await service.get_complaint_by_id(complaint_id)
     if not complaint:
         raise HTTPException(status_code=404, detail="Complaint not found")
-    return _serialize(complaint)
+    return _serialize_public(complaint)
 
 
 @router.get("/departments")
@@ -196,3 +215,57 @@ def _serialize(complaint: dict) -> dict:
         if k in c and hasattr(c[k], "isoformat"):
             c[k] = c[k].isoformat()
     return c
+
+
+def _contact_matches(complaint: dict, email: str = None, mobile: str = None) -> bool:
+    if email and complaint.get("citizen_email", "").lower().strip() == email.lower().strip():
+        return True
+    if mobile:
+        submitted = re.sub(r"\D", "", complaint.get("citizen_phone", ""))
+        provided = re.sub(r"\D", "", mobile)
+        return submitted[-10:] and submitted[-10:] == provided[-10:]
+    return False
+
+
+def _mask_email(email: str) -> str:
+    if not email or "@" not in email:
+        return "N/A"
+    name, domain = email.split("@", 1)
+    return f"{name[:2]}***@{domain}"
+
+
+def _mask_phone(phone: str) -> str:
+    digits = re.sub(r"\D", "", phone or "")
+    if len(digits) < 4:
+        return "N/A"
+    return f"******{digits[-4:]}"
+
+
+def _serialize_public(complaint: dict) -> dict:
+    c = _serialize(complaint)
+    return {
+        "_id": c["_id"],
+        "complaint_id": c.get("complaint_id"),
+        "citizen_name": c.get("citizen_name", "")[:1] + "***" if c.get("citizen_name") else "N/A",
+        "citizen_email": _mask_email(c.get("citizen_email")),
+        "citizen_phone": _mask_phone(c.get("citizen_phone")),
+        "title": c.get("title"),
+        "location": c.get("location"),
+        "language": c.get("language"),
+        "category": c.get("category"),
+        "priority": c.get("priority"),
+        "department": c.get("department"),
+        "ai_summary": c.get("ai_summary"),
+        "ai_confidence": c.get("ai_confidence"),
+        "status": c.get("status"),
+        "image_url": c.get("image_url"),
+        "forwarding": {
+            "forwarded": c.get("forwarding", {}).get("forwarded", False),
+            "forwarded_to": c.get("forwarding", {}).get("forwarded_to"),
+            "response_sla": c.get("forwarding", {}).get("response_sla"),
+            "tracking_reference": c.get("forwarding", {}).get("tracking_reference"),
+        },
+        "timeline": c.get("timeline", []),
+        "created_at": c.get("created_at"),
+        "updated_at": c.get("updated_at"),
+    }

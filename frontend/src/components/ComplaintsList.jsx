@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, ExternalLink } from 'lucide-react'
-import { complaintService } from '../services/api'
+import { adminService } from '../services/api'
 import PriorityBadge from '../components/PriorityBadge'
 import SkeletonLoader from '../components/SkeletonLoader'
 
@@ -17,7 +17,7 @@ export default function ComplaintsList() {
 
   const loadComplaints = async () => {
     try {
-      const data = await complaintService.getComplaints({ limit: 50 })
+      const data = await adminService.getComplaints({ limit: 50 })
       setComplaints(data.data || [])
     } catch (error) { console.error('Failed to load complaints:', error) }
     finally { setLoading(false) }
@@ -48,8 +48,10 @@ export default function ComplaintsList() {
           <option value="all">STATUS: ALL</option>
           <option value="Submitted">Submitted</option>
           <option value="In Progress">In Progress</option>
-          <option value="Escalated">Escalated</option>
+          <option value="Under Review">Under Review</option>
+          <option value="Assigned">Assigned</option>
           <option value="Resolved">Resolved</option>
+          <option value="Closed">Closed</option>
         </select>
         <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className={selectClass}>
           <option value="all">PRIORITY: ALL</option>
@@ -67,7 +69,7 @@ export default function ComplaintsList() {
       ) : (
         <div className="border border-border-primary bg-white divide-y divide-border-primary">
           {filteredComplaints.map((complaint) => (
-            <div key={complaint._id} onClick={() => navigate(`/complaints/${complaint._id}`)}
+            <div key={complaint._id} onClick={() => navigate(`/admin/complaint/${complaint._id}`)}
               className="p-4 hover:bg-bg-secondary transition-base cursor-pointer group flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1.5">

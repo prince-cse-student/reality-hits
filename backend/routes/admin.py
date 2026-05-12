@@ -2,12 +2,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from database.mongo import get_database
 from services.complaint_service import ComplaintService
+from services.department_config import DEFAULT_DEPARTMENT, get_all_departments
 from middleware import get_current_admin
 from datetime import datetime
 
 router = APIRouter()
 
 STATUSES = ["Submitted", "Under Review", "Assigned", "In Progress", "Resolved", "Closed"]
+PRIORITIES = ["Low", "Medium", "High"]
 
 
 def get_service(db=Depends(get_database)) -> ComplaintService:
@@ -37,6 +39,18 @@ async def admin_get_complaints(
     return {"data": [_serialize(c) for c in complaints], "total": total, "skip": skip, "limit": limit}
 
 
+@router.get("/admin/complaints/{complaint_id}")
+async def admin_get_complaint(
+    complaint_id: str,
+    service: ComplaintService = Depends(get_service),
+    admin: dict = Depends(get_current_admin),
+):
+    complaint = await service.get_complaint_by_id(complaint_id)
+    if not complaint:
+        raise HTTPException(status_code=404, detail="Complaint not found")
+    return _serialize(complaint)
+
+
 @router.patch("/admin/complaints/{complaint_id}")
 async def admin_update_complaint(
     complaint_id: str,
@@ -48,8 +62,12 @@ async def admin_update_complaint(
     """Update complaint — status, department, priority, add admin note + timeline"""
     update_data = {}
     timeline_events = []
+    department_names = {dept["name"] for dept in get_all_departments()}
+    department_names.add(DEFAULT_DEPARTMENT["name"])
 
     if status:
+        if status not in STATUSES:
+            raise HTTPException(status_code=422, detail=f"Invalid status: {status}")
         update_data["status"] = status
         timeline_events.append({
             "event": f"status_{status.lower().replace(' ', '_')}",
@@ -61,6 +79,8 @@ async def admin_update_complaint(
         })
 
     if department:
+        if department not in department_names:
+            raise HTTPException(status_code=422, detail=f"Invalid department: {department}")
         update_data["department"] = department
         timeline_events.append({
             "event": "department_reassigned",
@@ -72,6 +92,8 @@ async def admin_update_complaint(
         })
 
     if priority:
+        if priority not in PRIORITIES:
+            raise HTTPException(status_code=422, detail=f"Invalid priority: {priority}")
         update_data["priority"] = priority
 
     complaint = await service.update_complaint(complaint_id, update_data)

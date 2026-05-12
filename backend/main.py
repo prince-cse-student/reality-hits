@@ -5,14 +5,15 @@ from contextlib import asynccontextmanager
 from database.mongo import connect_to_mongo, close_mongo_connection, get_database
 from routes import complaints, dashboard, auth, admin
 from services.auth_service import AuthService
-from config import ADMIN_ACCOUNTS
+from services.complaint_service import ComplaintService
+from config import ADMIN_ACCOUNTS, CORS_ORIGINS, UPLOAD_DIR
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_to_mongo()
-    # Seed admin accounts
     db = get_database()
+    await ComplaintService(db).ensure_indexes()
     auth_svc = AuthService(db)
     await auth_svc.seed_admins(ADMIN_ACCOUNTS)
     yield
@@ -28,13 +29,14 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 app.include_router(auth.router, prefix="/api", tags=["Auth"])
 app.include_router(complaints.router, prefix="/api", tags=["Complaints"])

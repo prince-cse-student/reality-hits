@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { complaintService } from '../services/api'
-import { adminService } from '../services/api'
+import { adminService, resolveUploadUrl } from '../services/api'
 import ComplaintTimeline from '../components/ComplaintTimeline'
 import { ArrowLeft, MapPin, Calendar, User, Phone, Mail, Globe, Building2, Cpu, Send, Image } from 'lucide-react'
 
@@ -16,7 +15,7 @@ export default function AdminComplaintDetails() {
 
   useEffect(() => { load() }, [id])
   const load = async () => {
-    try { setC(await complaintService.getComplaintById(id)) }
+    try { setC(await adminService.getComplaintById(id)) }
     catch (e) { console.error(e) }
     finally { setLoading(false) }
   }
@@ -257,7 +256,7 @@ export default function AdminComplaintDetails() {
               <h2 className="text-[11px] font-bold text-text-primary uppercase tracking-widest">EVIDENCE</h2>
             </div>
             <div className="p-5">
-              <img src={c.image_url} alt="Evidence" className="max-w-full border border-border-primary" />
+              <img src={resolveUploadUrl(c.image_url)} alt="Evidence" className="max-w-full border border-border-primary" />
             </div>
           </section>
         )}

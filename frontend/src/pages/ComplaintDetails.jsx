@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { complaintService } from '../services/api'
+import { complaintService, resolveUploadUrl } from '../services/api'
 import ComplaintTimeline from '../components/ComplaintTimeline'
 import PriorityBadge from '../components/PriorityBadge'
 import { ArrowLeft, MapPin, Calendar, AlertCircle, Building2, Cpu, Send, Mail } from 'lucide-react'
@@ -34,7 +34,7 @@ export default function ComplaintDetails() {
         <AlertCircle size={36} className="text-danger mx-auto mb-3" />
         <h2 className="text-xl font-bold text-text-primary mb-1">Not Found</h2>
         <p className="text-[13px] text-text-secondary mb-5">This complaint doesn't exist.</p>
-        <button onClick={() => navigate('/dashboard')} className="px-4 py-2 text-[13px] font-bold text-brand bg-brand-muted uppercase tracking-wider transition-base hover:bg-brand hover:text-white">Back to Dashboard</button>
+        <button onClick={() => navigate('/track')} className="px-4 py-2 text-[13px] font-bold text-brand bg-brand-muted uppercase tracking-wider transition-base hover:bg-brand hover:text-white">Back to Tracking</button>
       </div>
     </div>
   )
@@ -60,7 +60,7 @@ export default function ComplaintDetails() {
           <div className="border border-border-primary bg-white p-6 animate-fade-in-up-d1">
             <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mb-2">COMPLAINT</p>
             {c.title && <h3 className="text-[15px] font-bold text-text-primary mb-2">{c.title}</h3>}
-            <p className="text-text-secondary text-[14px] leading-relaxed">{c.text}</p>
+            <p className="text-text-secondary text-[14px] leading-relaxed">{c.ai_summary || c.title || 'Summary unavailable.'}</p>
             <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border-primary flex-wrap">
               <span className="flex items-center gap-1.5 text-[11px] text-text-tertiary"><MapPin size={11} />{c.location}</span>
               <span className="flex items-center gap-1.5 text-[11px] text-text-tertiary"><Calendar size={11} />{new Date(c.created_at).toLocaleDateString()}</span>
@@ -187,7 +187,7 @@ export default function ComplaintDetails() {
           {c.image_url && (
             <div className="border border-border-primary bg-white p-6">
               <h2 className="text-[13px] font-bold text-text-primary uppercase tracking-widest mb-3">Evidence</h2>
-              <img src={c.image_url} alt="Evidence" className="max-w-full border border-border-primary" />
+              <img src={resolveUploadUrl(c.image_url)} alt="Evidence" className="max-w-full border border-border-primary" />
             </div>
           )}
         </div>

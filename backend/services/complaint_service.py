@@ -1,18 +1,31 @@
 """Complaint service — CRUD, stats, tracking, admin notes, timeline, department analytics"""
 from bson import ObjectId
 from datetime import datetime
+from pymongo import ASCENDING, ReturnDocument
 from typing import List, Optional, Tuple
 
 
 class ComplaintService:
     def __init__(self, db):
+        self.db = db
         self.collection = db["complaints"]
+        self.counters = db["counters"]
+
+    async def ensure_indexes(self):
+        await self.collection.create_index([("complaint_id", ASCENDING)], unique=True)
+        await self.collection.create_index([("citizen_email", ASCENDING), ("created_at", ASCENDING)])
+        await self.collection.create_index([("citizen_phone", ASCENDING), ("created_at", ASCENDING)])
 
     async def generate_complaint_id(self) -> str:
         """Generate unique complaint ID like CV-2026-000145"""
         year = datetime.utcnow().year
-        count = await self.collection.count_documents({})
-        return f"CV-{year}-{str(count + 1).zfill(6)}"
+        counter = await self.counters.find_one_and_update(
+            {"_id": f"complaint_id:{year}"},
+            {"$inc": {"seq": 1}},
+            upsert=True,
+            return_document=ReturnDocument.AFTER,
+        )
+        return f"CV-{year}-{str(counter['seq']).zfill(6)}"
 
     async def create_complaint(self, complaint_data: dict) -> dict:
         """Create a new complaint"""

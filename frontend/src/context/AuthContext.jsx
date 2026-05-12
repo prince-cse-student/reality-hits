@@ -9,13 +9,21 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Restore admin session from localStorage
     const stored = localStorage.getItem('cv_admin')
     const token = localStorage.getItem('cv_token')
-    if (stored && token) {
+    if (stored && token && !isTokenExpired(token)) {
       try { setUser(JSON.parse(stored)) } catch { localStorage.removeItem('cv_admin') }
+    } else {
+      localStorage.removeItem('cv_token')
+      localStorage.removeItem('cv_admin')
     }
     setLoading(false)
+  }, [])
+
+  useEffect(() => {
+    const handleUnauthorized = () => setUser(null)
+    window.addEventListener('cv:unauthorized', handleUnauthorized)
+    return () => window.removeEventListener('cv:unauthorized', handleUnauthorized)
   }, [])
 
   const loginAdmin = (data) => {
@@ -37,4 +45,13 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   )
+}
+
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    return payload.exp ? payload.exp * 1000 <= Date.now() : true
+  } catch {
+    return true
+  }
 }

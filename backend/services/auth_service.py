@@ -39,7 +39,7 @@ class AuthService:
         return admin
 
     async def seed_admins(self, admin_list: list):
-        """Seed admin accounts from config"""
+        """Seed missing admin accounts from config without resetting existing users."""
         for admin in admin_list:
             existing = await self.admins.find_one({"email": admin["email"].lower()})
             if not existing:
@@ -52,11 +52,3 @@ class AuthService:
                 }
                 await self.admins.insert_one(admin_doc)
                 print(f"Admin created: {admin['email']}")
-            else:
-                # Update password if changed
-                if not verify_password(admin["password"], existing["password_hash"]):
-                    await self.admins.update_one(
-                        {"_id": existing["_id"]},
-                        {"$set": {"password_hash": hash_password(admin["password"])}}
-                    )
-                    print(f"Admin password updated: {admin['email']}")

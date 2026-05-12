@@ -22,9 +22,11 @@ export default function ComplaintFilter({ onFilter }) {
         <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })} className={selectClass}>
           <option value="all">All Status</option>
           <option value="Submitted">Submitted</option>
+          <option value="Under Review">Under Review</option>
+          <option value="Assigned">Assigned</option>
           <option value="In Progress">In Progress</option>
-          <option value="Escalated">Escalated</option>
           <option value="Resolved">Resolved</option>
+          <option value="Closed">Closed</option>
         </select>
       </div>
 
@@ -46,11 +48,16 @@ export default function ComplaintFilter({ onFilter }) {
           <option value="Water">Water</option>
           <option value="Roads">Roads</option>
           <option value="Garbage">Garbage</option>
-          <option value="Healthcare">Healthcare</option>
-          <option value="Education">Education</option>
-          <option value="Public Safety">Public Safety</option>
-          <option value="Transportation">Transportation</option>
-          <option value="Other">Other</option>
+          <option value="Sanitation">Sanitation</option>
+          <option value="Transport">Transport</option>
+          <option value="Noise">Noise</option>
+          <option value="Safety">Safety</option>
+          <option value="Telecom">Telecom</option>
+          <option value="Consumer">Consumer</option>
+          <option value="Government">Government</option>
+          <option value="Banking">Banking</option>
+          <option value="Housing">Housing</option>
+          <option value="Travel">Travel</option>
         </select>
       </div>
 

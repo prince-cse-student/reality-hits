@@ -27,6 +27,11 @@ services:
       MONGO_DB_NAME: reality_hits
       LM_STUDIO_API_URL: http://host.docker.internal:1234/v1/chat/completions
       DEBUG: "True"
+      JWT_SECRET: local-compose-secret-change-before-production
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      ADMIN_EMAIL: admin@citizenvoice.in
+      ADMIN_PASSWORD: local-admin-password-123
+      ADMIN_FULL_NAME: Local Administrator
     depends_on:
       - mongodb
     networks:
@@ -36,6 +41,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8000
     container_name: reality_hits_frontend
     ports:
       - "5173:5173"

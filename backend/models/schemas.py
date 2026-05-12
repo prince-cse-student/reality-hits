@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
@@ -53,8 +53,9 @@ class Complaint(BaseModel):
     ai_summary: Optional[str] = None
     ai_confidence: Optional[int] = None
     status: str
-    email: Optional[str] = None
-    mobile: Optional[str] = None
+    citizen_name: Optional[str] = None
+    citizen_email: Optional[str] = None
+    citizen_phone: Optional[str] = None
     admin_notes: Optional[List[dict]] = []
     image_url: Optional[str] = None
     created_at: datetime

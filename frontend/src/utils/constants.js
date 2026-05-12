@@ -2,9 +2,11 @@
 
 export const COMPLAINT_STATUS = {
   SUBMITTED: 'Submitted',
+  UNDER_REVIEW: 'Under Review',
+  ASSIGNED: 'Assigned',
   IN_PROGRESS: 'In Progress',
-  ESCALATED: 'Escalated',
-  RESOLVED: 'Resolved'
+  RESOLVED: 'Resolved',
+  CLOSED: 'Closed'
 }
 
 export const PRIORITY_LEVELS = {
@@ -18,11 +20,16 @@ export const CATEGORIES = [
   'Water',
   'Roads',
   'Garbage',
-  'Healthcare',
-  'Education',
-  'Public Safety',
-  'Transportation',
-  'Other'
+  'Sanitation',
+  'Transport',
+  'Noise',
+  'Safety',
+  'Telecom',
+  'Consumer',
+  'Government',
+  'Banking',
+  'Housing',
+  'Travel'
 ]
 
 export const LANGUAGES = [
@@ -35,11 +42,16 @@ export const DEPARTMENTS = {
   'Water': 'Water Supply Department',
   'Roads': 'Public Works Department',
   'Garbage': 'Waste Management Department',
-  'Healthcare': 'Health Department',
-  'Education': 'Education Department',
-  'Public Safety': 'Police Department',
-  'Transportation': 'Transport Department',
-  'Other': 'General Grievance Department'
+  'Sanitation': 'Sanitation & Waste Management',
+  'Transport': 'Transport Authority',
+  'Noise': 'Pollution Control Board',
+  'Safety': 'Public Safety Division',
+  'Telecom': 'Telecom Regulatory Authority',
+  'Consumer': 'Consumer Disputes Forum',
+  'Government': 'General Administration Department',
+  'Banking': 'Banking Ombudsman Office',
+  'Housing': 'Housing & Urban Development',
+  'Travel': 'Tourism & Travel Authority'
 }
 
 export const API_ENDPOINTS = {

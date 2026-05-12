@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { complaintService } from '../services/api'
+import { complaintService, resolveUploadUrl } from '../services/api'
 import ComplaintTimeline from '../components/ComplaintTimeline'
 import { Search, AlertTriangle } from 'lucide-react'
 
 export default function TrackComplaint() {
   const [mode, setMode] = useState('id')
   const [query, setQuery] = useState('')
+  const [contact, setContact] = useState('')
   const [results, setResults] = useState([])
   const [single, setSingle] = useState(null)
   const [error, setError] = useState('')
@@ -13,10 +14,14 @@ export default function TrackComplaint() {
 
   const handleTrack = async (e) => {
     e.preventDefault(); setError(''); setResults([]); setSingle(null)
-    if (!query.trim()) return setError('Please enter a search query.')
+    if (!query.trim()) return setError('Please enter your complaint reference ID.')
+    if (!contact.trim()) return setError('Please enter the registered email or mobile number.')
     setLoading(true)
     try {
-      const params = mode === 'id' ? { complaint_id: query.trim() } : mode === 'email' ? { email: query.trim() } : { mobile: query.trim() }
+      const isEmail = contact.includes('@')
+      const params = isEmail
+        ? { complaint_id: query.trim(), email: contact.trim() }
+        : { complaint_id: query.trim(), mobile: contact.trim() }
       const res = await complaintService.trackComplaint(params)
       if (res.data) setResults(res.data)
       else setSingle(res)
@@ -26,8 +31,6 @@ export default function TrackComplaint() {
 
   const modes = [
     { id: 'id', label: 'REFERENCE ID', placeholder: 'CV-...' },
-    { id: 'email', label: 'EMAIL', placeholder: 'you@example.com' },
-    { id: 'mobile', label: 'MOBILE', placeholder: '+91...' },
   ]
 
   const renderComplaint = (c) => {
@@ -93,13 +96,13 @@ export default function TrackComplaint() {
           </div>
         </section>
 
-        {/* Original Complaint */}
+        {/* Complaint Summary */}
         <section className="border border-border-primary bg-white">
           <div className="bg-bg-secondary px-5 py-3 border-b border-border-primary">
-            <h2 className="text-[11px] font-bold text-text-primary uppercase tracking-widest">ORIGINAL COMPLAINT</h2>
+            <h2 className="text-[11px] font-bold text-text-primary uppercase tracking-widest">COMPLAINT SUMMARY</h2>
           </div>
           <div className="p-5">
-            <p className="text-[14px] text-text-primary leading-relaxed">{c.text}</p>
+            <p className="text-[14px] text-text-primary leading-relaxed">{c.ai_summary || c.title || 'Summary unavailable.'}</p>
             <div className="flex flex-wrap gap-x-6 gap-y-1 mt-4 pt-3 border-t border-border-primary">
               {c.citizen_name && <span className="text-[11px] text-text-secondary"><strong className="text-text-primary">Filed by:</strong> {c.citizen_name}</span>}
               <span className="text-[11px] text-text-secondary"><strong className="text-text-primary">Location:</strong> {c.location}</span>
@@ -205,27 +208,7 @@ export default function TrackComplaint() {
               <h2 className="text-[11px] font-bold text-text-primary uppercase tracking-widest">EVIDENCE</h2>
             </div>
             <div className="p-5">
-              <img src={c.image_url} alt="Evidence" className="max-w-full border border-border-primary" />
-            </div>
-          </section>
-        )}
-
-        {/* Admin Notes (read-only for citizens) */}
-        {c.admin_notes?.length > 0 && (
-          <section className="border border-border-primary bg-white">
-            <div className="bg-bg-secondary px-5 py-3 border-b border-border-primary">
-              <h2 className="text-[11px] font-bold text-text-primary uppercase tracking-widest">ADMINISTRATIVE REMARKS</h2>
-            </div>
-            <div className="divide-y divide-border-primary">
-              {c.admin_notes.map((n, i) => (
-                <div key={i} className="p-4 flex items-start gap-3">
-                  <div className="w-1 self-stretch bg-brand flex-shrink-0" />
-                  <div>
-                    <p className="text-[13px] text-text-primary mb-0.5">{n.note}</p>
-                    <p className="text-[10px] text-text-tertiary uppercase tracking-widest">BY: {n.admin} | {n.timestamp}</p>
-                  </div>
-                </div>
-              ))}
+              <img src={resolveUploadUrl(c.image_url)} alt="Evidence" className="max-w-full border border-border-primary" />
             </div>
           </section>
         )}
@@ -241,7 +224,7 @@ export default function TrackComplaint() {
         <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mb-2">TRACKING PORTAL</p>
         <h1 className="text-[28px] md:text-[32px] font-extrabold text-text-primary uppercase tracking-tight mb-3">TRACK YOUR COMPLAINT</h1>
         <p className="text-[14px] text-text-secondary max-w-md">
-          Look up your complaint status using your reference ID, email, or mobile number.
+          Look up your complaint status using your reference ID and registered contact detail.
         </p>
         <div className="w-16 h-[2px] bg-brand mt-5" />
       </div>
@@ -250,7 +233,7 @@ export default function TrackComplaint() {
       <div className="border border-border-primary bg-white mb-4 animate-fade-in-up-d1">
         <div className="flex border-b border-border-primary">
           {modes.map(m => (
-            <button key={m.id} onClick={() => { setMode(m.id); setResults([]); setSingle(null); setError(''); setQuery('') }}
+            <button key={m.id} onClick={() => { setMode(m.id); setResults([]); setSingle(null); setError(''); setQuery(''); setContact('') }}
               className={`px-5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors ${
                 mode === m.id ? 'text-brand border-b-2 border-brand -mb-px bg-brand-light' : 'text-text-tertiary hover:text-text-primary'
               }`}>{m.label}</button>
@@ -260,6 +243,9 @@ export default function TrackComplaint() {
         <form onSubmit={handleTrack} className="flex flex-col md:flex-row gap-3 p-5">
           <input type="text" value={query} onChange={e => setQuery(e.target.value)}
             placeholder={modes.find(m => m.id === mode)?.placeholder}
+            className="flex-1 px-4 py-3 border border-border-primary text-[14px]" />
+          <input type="text" value={contact} onChange={e => setContact(e.target.value)}
+            placeholder="Registered email or mobile"
             className="flex-1 px-4 py-3 border border-border-primary text-[14px]" />
           <button type="submit" disabled={loading}
             className="px-8 py-3 bg-text-primary text-white text-[13px] font-bold uppercase tracking-wider hover:bg-brand transition-colors disabled:opacity-50 flex items-center justify-center gap-2">

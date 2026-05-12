@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { AdminRoute } from './components/ProtectedRoute'
 import Navbar from './components/Navbar'
@@ -9,7 +9,6 @@ import { useToast } from './hooks/useToast'
 import Home from './pages/Home'
 import AdminLogin from './pages/AdminLogin'
 import SubmitComplaint from './pages/SubmitComplaint'
-import Dashboard from './pages/Dashboard'
 import ComplaintDetails from './pages/ComplaintDetails'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminComplaintDetails from './pages/AdminComplaintDetails'
@@ -34,7 +33,7 @@ function AppContent() {
 
           {/* Admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
+          <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/complaint/:id" element={<AdminRoute><AdminComplaintDetails /></AdminRoute>} />
         </Routes>
