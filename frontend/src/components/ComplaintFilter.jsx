@@ -13,15 +13,13 @@ export default function ComplaintFilter({ onFilter }) {
     onFilter(filters)
   }, [filters])
 
+  const selectClass = "w-full px-3 py-2 border border-border-primary bg-white text-[13px] text-text-primary focus:border-brand focus:outline-none"
+
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-        <select
-          value={filters.status}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-          className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-purple-accent focus:outline-none"
-        >
+        <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5">Status</label>
+        <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })} className={selectClass}>
           <option value="all">All Status</option>
           <option value="Submitted">Submitted</option>
           <option value="In Progress">In Progress</option>
@@ -31,12 +29,8 @@ export default function ComplaintFilter({ onFilter }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
-        <select
-          value={filters.priority}
-          onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
-          className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-purple-accent focus:outline-none"
-        >
+        <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5">Priority</label>
+        <select value={filters.priority} onChange={(e) => setFilters({ ...filters, priority: e.target.value })} className={selectClass}>
           <option value="all">All Priority</option>
           <option value="High">High</option>
           <option value="Medium">Medium</option>
@@ -45,12 +39,8 @@ export default function ComplaintFilter({ onFilter }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-        <select
-          value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-          className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-purple-accent focus:outline-none"
-        >
+        <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5">Category</label>
+        <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })} className={selectClass}>
           <option value="all">All Categories</option>
           <option value="Electricity">Electricity</option>
           <option value="Water">Water</option>
@@ -65,12 +55,8 @@ export default function ComplaintFilter({ onFilter }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
-        <select
-          value={filters.dateRange}
-          onChange={(e) => setFilters({ ...filters, dateRange: e.target.value })}
-          className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-purple-accent focus:outline-none"
-        >
+        <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5">Date Range</label>
+        <select value={filters.dateRange} onChange={(e) => setFilters({ ...filters, dateRange: e.target.value })} className={selectClass}>
           <option value="all">All Time</option>
           <option value="today">Today</option>
           <option value="week">This Week</option>

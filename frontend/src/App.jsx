@@ -12,6 +12,7 @@ import SubmitComplaint from './pages/SubmitComplaint'
 import Dashboard from './pages/Dashboard'
 import ComplaintDetails from './pages/ComplaintDetails'
 import AdminDashboard from './pages/AdminDashboard'
+import AdminComplaintDetails from './pages/AdminComplaintDetails'
 import TrackComplaint from './pages/TrackComplaint'
 import Features from './pages/Features'
 
@@ -35,6 +36,7 @@ function AppContent() {
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
           <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+          <Route path="/admin/complaint/:id" element={<AdminRoute><AdminComplaintDetails /></AdminRoute>} />
         </Routes>
       </main>
       {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}

@@ -13,9 +13,9 @@ html {
 }
 
 body {
-  background-color: #0B1020;
-  color: #f4f6fa;
-  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #FFFFFF;
+  color: #193B68;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -23,47 +23,42 @@ body {
 
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B1020;
+  background: #F7F8FA;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e2d4a;
-  border-radius: 3px;
+  background: #CBD5E1;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b5280;
+  background: #94A3B8;
 }
 
 /* ─── Transition ─── */
 .transition-base {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s ease;
 }
 
 /* ─── Cards ─── */
 .card {
-  background: linear-gradient(135deg, rgba(20, 29, 51, 0.9) 0%, rgba(20, 29, 51, 0.7) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 14px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  box-shadow: none;
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(79, 140, 255, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border-color: #CBD5E1;
 }
 
 /* ─── Gradient text ─── */
 .text-gradient {
-  background: linear-gradient(135deg, #4F8CFF 0%, #22D3EE 100%);
+  background: linear-gradient(135deg, #1479FF 0%, #14D2FF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -72,111 +67,112 @@ body {
 /* ─── Section divider ─── */
 .section-glow {
   position: relative;
+  border-top: 1px solid #E5E7EB;
 }
 
 .section-glow::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(79, 140, 255, 0.15), transparent);
+  display: none;
 }
 
 /* ─── Spinner ─── */
 .spinner {
-  border: 2px solid rgba(79, 140, 255, 0.15);
-  border-top: 2px solid #4F8CFF;
+  border: 2px solid #E5E7EB;
+  border-top: 2px solid #1479FF;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  animation: spin 0.7s linear infinite;
+  width: 28px;
+  height: 28px;
+  animation: spin 0.6s linear infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* ─── Form Inputs ─── */
 input[type="text"],
 input[type="email"],
+input[type="password"],
+input[type="tel"],
 textarea,
 select {
-  background: #111b30 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: #f4f6fa !important;
-  font-family: 'Inter', system-ui, sans-serif;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  background: #FFFFFF !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 4px !important;
+  color: #193B68 !important;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  transition: border-color 0.15s;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
+input:focus,
 textarea:focus,
 select:focus {
-  border-color: rgba(79, 140, 255, 0.5) !important;
-  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.1), 0 0 12px rgba(79, 140, 255, 0.04) !important;
+  border-color: #1479FF !important;
+  box-shadow: 0 0 0 3px rgba(20, 121, 255, 0.10) !important;
   outline: none !important;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #4a5f8a !important;
+  color: #94A3B8 !important;
 }
 
 select option {
-  background: #111b30;
-  color: #f4f6fa;
+  background: #FFFFFF;
+  color: #193B68;
 }
 
 /* ─── Badges ─── */
 .badge-high {
-  @apply bg-danger-muted text-danger;
+  @apply border border-danger text-danger bg-danger-muted;
 }
 
 .badge-medium {
-  @apply bg-warning-muted text-warning;
+  @apply border border-warning text-warning bg-warning-muted;
 }
 
 .badge-low {
-  @apply bg-success-muted text-success;
+  @apply border border-success text-success bg-success-muted;
 }
 
 /* ─── Recharts ─── */
 .recharts-cartesian-grid line {
-  stroke: rgba(255, 255, 255, 0.04) !important;
+  stroke: #E5E7EB !important;
 }
 
 .recharts-text {
-  fill: #6b7fa3 !important;
+  fill: #5A6B82 !important;
+  font-family: 'Inter', sans-serif;
   font-size: 11px;
 }
 
 .recharts-tooltip-wrapper .recharts-default-tooltip {
-  background-color: #141d33 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+  color: #193B68 !important;
 }
 
-/* ─── Progress bar glow ─── */
+/* ─── Progress bar ─── */
 .progress-glow {
-  box-shadow: 0 0 8px rgba(79, 140, 255, 0.3);
+  box-shadow: 0 0 8px rgba(20, 121, 255, 0.30);
 }
 
 /* ─── Base ─── */
 button {
-  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', sans-serif;
+  border-radius: 4px;
 }
 
 input,
 textarea,
 select {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ─── Utility ─── */
+.bg-brand-gradient {
+  background: linear-gradient(135deg, #1479FF 0%, #14A5FF 100%);
 }

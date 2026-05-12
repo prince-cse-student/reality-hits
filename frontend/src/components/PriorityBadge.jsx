@@ -1,16 +1,12 @@
-import { AlertCircle, CheckCircle2, Clock } from 'lucide-react'
-
 export default function PriorityBadge({ priority }) {
-  const config = {
-    High: { bg: 'bg-danger-muted', text: 'text-danger', icon: AlertCircle },
-    Medium: { bg: 'bg-warning-muted', text: 'text-warning', icon: Clock },
-    Low: { bg: 'bg-success-muted', text: 'text-success', icon: CheckCircle2 },
+  const styles = {
+    High: 'text-danger bg-danger-muted border-danger',
+    Medium: 'text-warning bg-warning-muted border-warning',
+    Low: 'text-success bg-success-muted border-success',
+    Critical: 'text-danger bg-danger-muted border-danger',
   }
-  const { bg, text, icon: Icon } = config[priority] || config['Medium']
-
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md ${bg} ${text} text-[11px] font-semibold`}>
-      <Icon size={11} />
+    <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 border ${styles[priority] || 'text-text-tertiary bg-bg-secondary border-border-primary'}`}>
       {priority}
     </span>
   )

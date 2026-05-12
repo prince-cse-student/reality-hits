@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Filter, MoreVertical } from 'lucide-react'
+import { Search, ExternalLink } from 'lucide-react'
 import { complaintService } from '../services/api'
 import PriorityBadge from '../components/PriorityBadge'
 import SkeletonLoader from '../components/SkeletonLoader'
@@ -13,19 +13,14 @@ export default function ComplaintsList() {
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterPriority, setFilterPriority] = useState('all')
 
-  useEffect(() => {
-    loadComplaints()
-  }, [])
+  useEffect(() => { loadComplaints() }, [])
 
   const loadComplaints = async () => {
     try {
       const data = await complaintService.getComplaints({ limit: 50 })
       setComplaints(data.data || [])
-    } catch (error) {
-      console.error('Failed to load complaints:', error)
-    } finally {
-      setLoading(false)
-    }
+    } catch (error) { console.error('Failed to load complaints:', error) }
+    finally { setLoading(false) }
   }
 
   const filteredComplaints = complaints.filter(complaint => {
@@ -33,81 +28,56 @@ export default function ComplaintsList() {
                          complaint.category.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = filterStatus === 'all' || complaint.status === filterStatus
     const matchesPriority = filterPriority === 'all' || complaint.priority === filterPriority
-    
     return matchesSearch && matchesStatus && matchesPriority
   })
 
-  if (loading) {
-    return <SkeletonLoader />
-  }
+  if (loading) return <SkeletonLoader />
+
+  const selectClass = "border border-border-primary bg-white text-[11px] font-bold px-3 py-2 uppercase outline-none focus:border-brand"
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Search and Filter */}
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-3">
         <div className="flex-1 relative">
-          <Search size={20} className="absolute left-3 top-3 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search complaints..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 focus:outline-none"
-          />
+          <Search size={16} className="absolute left-3 top-2.5 text-text-tertiary" />
+          <input type="text" placeholder="Search complaints..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-border-primary bg-white text-[13px] focus:border-brand focus:outline-none" />
         </div>
-        
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-gray-200 focus:border-purple-accent focus:outline-none"
-        >
-          <option value="all">All Status</option>
+        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={selectClass}>
+          <option value="all">STATUS: ALL</option>
           <option value="Submitted">Submitted</option>
           <option value="In Progress">In Progress</option>
           <option value="Escalated">Escalated</option>
           <option value="Resolved">Resolved</option>
         </select>
-
-        <select
-          value={filterPriority}
-          onChange={(e) => setFilterPriority(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-gray-200 focus:border-purple-accent focus:outline-none"
-        >
-          <option value="all">All Priority</option>
+        <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className={selectClass}>
+          <option value="all">PRIORITY: ALL</option>
           <option value="High">High</option>
           <option value="Medium">Medium</option>
           <option value="Low">Low</option>
         </select>
       </div>
 
-      {/* Complaints Grid */}
+      {/* Complaints Table */}
       {filteredComplaints.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No complaints found</p>
+        <div className="text-center py-12 border border-border-primary bg-bg-secondary">
+          <p className="text-[12px] text-text-tertiary uppercase tracking-widest">No complaints found</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="border border-border-primary bg-white divide-y divide-border-primary">
           {filteredComplaints.map((complaint) => (
-            <div
-              key={complaint._id}
-              onClick={() => navigate(`/complaints/${complaint._id}`)}
-              className="bg-white rounded-lg p-4 border border-gray-200 hover:border-purple-accent hover:shadow-medium transition-smooth cursor-pointer"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">
-                      {complaint.category}
-                    </span>
-                    <PriorityBadge priority={complaint.priority} />
-                  </div>
-                  <p className="text-sm text-gray-700 line-clamp-2">{complaint.text}</p>
-                  <p className="text-xs text-gray-500 mt-2">{complaint.location}</p>
+            <div key={complaint._id} onClick={() => navigate(`/complaints/${complaint._id}`)}
+              className="p-4 hover:bg-bg-secondary transition-base cursor-pointer group flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-[10px] font-bold text-text-primary bg-bg-secondary px-2 py-0.5 uppercase">{complaint.category}</span>
+                  <PriorityBadge priority={complaint.priority} />
                 </div>
-                <button className="p-2 hover:bg-gray-100 rounded-lg">
-                  <MoreVertical size={16} className="text-gray-400" />
-                </button>
+                <p className="text-[13px] text-text-primary line-clamp-2 mb-1">{complaint.text}</p>
+                <p className="text-[11px] text-text-tertiary">{complaint.location}</p>
               </div>
+              <ExternalLink size={14} className="text-text-tertiary group-hover:text-brand transition-base flex-shrink-0 mt-1" />
             </div>
           ))}
         </div>
