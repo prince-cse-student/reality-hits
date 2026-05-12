@@ -18,10 +18,10 @@ export const authService = {
 
 // ─── Complaints (public) ───
 export const complaintService = {
-  submitComplaint: async (formData) => (await api.post('/complaints', formData)).data,
-  getComplaints: async (params = {}) => (await api.get('/complaints', { params })).data,
-  getComplaintById: async (id) => (await api.get(`/complaints/${id}`)).data,
-  trackComplaint: async (params) => (await api.get('/complaints/track', { params })).data,
+  submitComplaint: async (formData) => (await api.post('/api/complaints', formData)).data,
+  getComplaints: async (params = {}) => (await api.get('/api/complaints', { params })).data,
+  getComplaintById: async (id) => (await api.get(`/api/complaints/${id}`)).data,
+  trackComplaint: async (params) => (await api.get('/api/complaints/track', { params })).data,
   getDashboardStats: async () => (await api.get('/dashboard/stats')).data,
   getCategoryStats: async () => (await api.get('/dashboard/categories')).data,
   getPriorityStats: async () => (await api.get('/dashboard/priorities')).data,
