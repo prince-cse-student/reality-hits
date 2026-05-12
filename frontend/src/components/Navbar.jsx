@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Menu, X, ArrowRight } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -46,7 +46,7 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="hidden md:flex items-center">
-            {isAdmin ? (
+            {isAdmin && (
               <div className="flex items-center gap-3">
                 <Link to="/admin/dashboard"
                   className="text-[12px] font-semibold tracking-wider text-brand hover:text-brand-hover transition-base">
@@ -57,11 +57,6 @@ export default function Navbar() {
                   LOGOUT
                 </button>
               </div>
-            ) : (
-              <Link to="/admin/login"
-                className="flex items-center gap-1 text-[12px] font-semibold tracking-wider text-text-secondary hover:text-text-primary transition-base">
-                ADMIN <ArrowRight size={14} />
-              </Link>
             )}
           </div>
 
@@ -81,16 +76,13 @@ export default function Navbar() {
                 }`}>{l.label}</Link>
             ))}
             <div className="pt-3 mt-3 border-t border-border-primary">
-              {isAdmin ? (
+              {isAdmin && (
                 <>
                   <Link to="/admin/dashboard" onClick={() => setOpen(false)}
                     className="block px-3 py-2 text-[13px] font-semibold text-brand">DASHBOARD</Link>
                   <button onClick={() => { logout(); setOpen(false) }}
                     className="block px-3 py-2 text-[13px] font-semibold text-danger">LOGOUT</button>
                 </>
-              ) : (
-                <Link to="/admin/login" onClick={() => setOpen(false)}
-                  className="block px-3 py-2 text-[13px] font-semibold text-text-secondary">ADMIN →</Link>
               )}
             </div>
           </div>

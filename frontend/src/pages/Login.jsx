@@ -67,12 +67,6 @@ export default function Login() {
           <p className="text-center text-[12px] text-text-tertiary">
             Don't have an account? <Link to="/signup" className="text-accent font-semibold hover:underline">Sign up</Link>
           </p>
-
-          <div className="border-t border-border-primary pt-3">
-            <Link to="/admin/login" className="block text-center text-[11px] text-text-tertiary hover:text-text-secondary transition-base">
-              Admin Login →
-            </Link>
-          </div>
         </form>
       </div>
     </div>

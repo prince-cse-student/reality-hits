@@ -12,7 +12,11 @@ export default function Home() {
 
   useEffect(() => {
     let timeout
-    if (demoState === 'typing') {
+    let interval
+
+    if (demoState === 'idle') {
+      timeout = setTimeout(() => setDemoState('typing'), 800)
+    } else if (demoState === 'typing') {
       let i = 0; setTypedText('')
       const typeChar = () => {
         if (i < fullText.length) { setTypedText(fullText.slice(0, i + 1)); i++; timeout = setTimeout(typeChar, 35) }
@@ -23,15 +27,16 @@ export default function Home() {
       timeout = setTimeout(() => {
         setDemoState('complete')
         let c = 0
-        const fill = setInterval(() => { c += 4; if (c >= 98) { setConfidence(98); clearInterval(fill) } else setConfidence(c) }, 15)
+        interval = setInterval(() => { c += 4; if (c >= 98) { setConfidence(98); clearInterval(interval) } else setConfidence(c) }, 15)
       }, 1200)
     } else if (demoState === 'complete') {
       timeout = setTimeout(() => { setDemoState('idle'); setTypedText(''); setConfidence(0) }, 6000)
     }
-    return () => clearTimeout(timeout)
+    return () => {
+      clearTimeout(timeout)
+      clearInterval(interval)
+    }
   }, [demoState])
-
-  useEffect(() => { const t = setTimeout(() => setDemoState('typing'), 800); return () => clearTimeout(t) }, [])
 
   return (
     <div className="min-h-screen">
@@ -185,8 +190,8 @@ export default function Home() {
                   <span className="text-brand text-[16px]">⚡</span>
                 </div>
                 <div>
-                  <p className="text-[14px] font-bold text-white uppercase tracking-wider">LM STUDIO ENGINE</p>
-                  <p className="text-[11px] text-white/50">Local LLM Processing</p>
+                  <p className="text-[14px] font-bold text-white uppercase tracking-wider">PROPRIETARY CLASSIFICATION ENGINE</p>
+                  <p className="text-[11px] text-white/50">Secure complaint intelligence</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
